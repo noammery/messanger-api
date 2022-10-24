@@ -28,7 +28,7 @@ app.use(`/ai`, answerRouter);
 
 const io = new Server(server, {
   cors: {
-    origin: `http://localhost:3000`,
+    origin: `https://verdant-salamander-ead004.netlify.app`,
     methods: ["GET", "POST"],
   },
 });
