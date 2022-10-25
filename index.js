@@ -31,6 +31,7 @@ const io = new Server(server, {
   cors: {
     origin: process.env.SECRET_URL,
     methods: ["GET", "POST"],
+    credentials: true,
   },
 });
 
