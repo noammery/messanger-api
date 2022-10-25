@@ -5,6 +5,7 @@
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "mongoose": "^6.6.5",
+    "node": "^19.0.0",
     "nodemon": "^2.0.20",
     "socket.io": "^4.5.3",
     "socketio-sticky-session": "^0.4.3",
@@ -17,6 +18,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node index.js"
+  },
+  "engines": {
+    "node": "19.0.0"
   },
   "author": "",
   "license": "ISC",
