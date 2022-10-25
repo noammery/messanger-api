@@ -7,6 +7,7 @@ const cors = require(`cors`);
 const bodyParser = require(`body-parser`);
 const usersRouter = require(`./routes/usersApi`);
 const answerRouter = require(`./routes/answerApi`);
+require(`dotenv`).config();
 mongoose.Promise = global.Promise;
 mongoose
   .connect(
@@ -28,7 +29,7 @@ app.use(`/ai`, answerRouter);
 
 const io = new Server(server, {
   cors: {
-    origin: `https://verdant-salamander-ead004.netlify.app`,
+    origin: process.env.SECRET_URL,
     methods: ["GET", "POST"],
   },
 });
