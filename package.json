@@ -17,10 +17,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node index.js"
-  },
-  "engines": {
-    "node": "19.0.0"
+    "start": "nodemon index"
   },
   "author": "",
   "license": "ISC",
