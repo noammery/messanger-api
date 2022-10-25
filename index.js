@@ -25,6 +25,10 @@ app.use(cors());
 
 app.use(bodyParser.json());
 
+app.use(`/user`, usersRouter);
+
+app.use(`/ai`, answerRouter);
+
 if (cluster.isMaster) {
   console.log(`Master ${process.pid} is running`);
   const server = http.createServer(app);
@@ -45,6 +49,9 @@ if (cluster.isMaster) {
   cluster.on("exit", (worker) => {
     console.log(`Worker ${worker.process.pid} died`);
     cluster.fork();
+  });
+  server.listen(3001, () => {
+    console.log("server is running on port 3001");
   });
 } else {
   console.log(`Worker ${process.pid} started`);
@@ -153,12 +160,7 @@ if (cluster.isMaster) {
       console.log(`User  ${socket.id} disconnect`);
     });
   });
+  server.listen(3001, () => {
+    console.log("server is running on port 3001");
+  });
 }
-
-app.use(`/user`, usersRouter);
-
-app.use(`/ai`, answerRouter);
-
-server.listen(3001, () => {
-  console.log("server is running on port 3001");
-});
