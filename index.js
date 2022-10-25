@@ -5,6 +5,8 @@ const http = require("http");
 const { Server } = require(`socket.io`);
 const cors = require(`cors`);
 const bodyParser = require(`body-parser`);
+const usersRouter = require(`./routes/usersApi`);
+const answerRouter = require(`./routes/answerApi`);
 require(`dotenv`).config();
 mongoose.Promise = global.Promise;
 mongoose
@@ -19,11 +21,11 @@ app.use(cors());
 
 app.use(bodyParser.json());
 
+const server = http.createServer(app);
+
 app.use(`/user`, usersRouter);
 
 app.use(`/ai`, answerRouter);
-
-const server = http.createServer(app);
 
 const io = new Server(server, {
   cors: {
