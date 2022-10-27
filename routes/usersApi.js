@@ -1,13 +1,23 @@
 const express = require(`express`);
 const router = express.Router();
 const User = require(`../modals/users`);
+require(`dotenv`).config();
+const bcrypt = require(`bcrypt`);
 
-router.post(`/register`, (req, res, next) => {
-  req.body
-    ? User.create(req.body)
-        .then((data) => res.json(data))
-        .catch(next)
-    : res.json({ error: `Please enter an input` });
+router.post(`/register`, async (req, res, next) => {
+  const cheack = await User.find({ email: req.body.email });
+  if (cheack.length === 0) {
+    const hashedPassword = await bcrypt.hash(req.body.password, 10);
+    const newUser = req.body;
+    newUser.password = hashedPassword;
+    req.body
+      ? User.create(newUser)
+          .then((data) => res.json(data))
+          .catch(next)
+      : res.json({ error: `Please enter an input` });
+  } else {
+    res.sendStatus(409);
+  }
 });
 
 router.post(`/find`, (req, res, next) => {
@@ -18,10 +28,14 @@ router.post(`/find`, (req, res, next) => {
 
 router.post(`/login`, async (req, res, next) => {
   const user = await User.findOne({ email: req.body.email });
-  if (user.password === req.body.password) {
-    res.json(user);
+  if (user) {
+    if (await bcrypt.compare(req.body.password, user.password)) {
+      res.json(user);
+    } else {
+      res.send(`Not Allowed`);
+    }
   } else {
-    res.status(401);
+    res.sendStatus(500);
   }
 });
 

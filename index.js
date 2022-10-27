@@ -7,6 +7,7 @@ const cors = require(`cors`);
 const bodyParser = require(`body-parser`);
 const usersRouter = require(`./routes/usersApi`);
 const answerRouter = require(`./routes/answerApi`);
+const historyRouter = require(`./routes/historyApi`);
 require(`dotenv`).config();
 mongoose.Promise = global.Promise;
 mongoose
@@ -26,6 +27,8 @@ const server = http.createServer(app);
 app.use(`/user`, usersRouter);
 
 app.use(`/ai`, answerRouter);
+
+app.use(`/history`, historyRouter);
 
 const io = new Server(server, {
   cors: {
@@ -58,7 +61,8 @@ io.on(`connection`, (socket) => {
 
   socket.on(`join_room`, (roomId) => {
     socket.join(roomId);
-    console.log(`User ${socket.id} joined room ${roomId}`);
+    console.log(socket.rooms);
+    console.log(`user ${socket.id} connected`);
   });
 
   socket.on(`submit_question`, (data) => {
@@ -119,6 +123,7 @@ io.on(`connection`, (socket) => {
 
   socket.on(`leave`, (room) => {
     socket.leave(room);
+    console.log(socket.rooms);
     console.log(`user ${socket.id} left room ${room}`);
     socket.emit(`reset_chat`);
   });
@@ -128,6 +133,7 @@ io.on(`connection`, (socket) => {
   });
 });
 
-server.listen(3001, () => {
+server.listen(process.env.PORT || 3001, () => {
   console.log("server is running on port 3001");
 });
+// process.env.PORT ||
