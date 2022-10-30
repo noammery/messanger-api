@@ -30,29 +30,19 @@ router.post(`/gethistory`, async (req, res, next) => {
   for (let i = 0; i < messages.length; i++) {
     const hashedRoom1 = cryptr.decrypt(messages[i].room);
     if (hashedRoom1 === room1) {
-      const hashedMessage1 = cryptr.decrypt(messages[i].message);
-      const hashedAuthor1 = cryptr.decrypt(messages[i].author);
-      const hashedTime1 = cryptr.decrypt(messages[i].time);
+      const hashedMessage1 = await cryptr.decrypt(messages[i].message);
+      const hashedAuthor1 = await cryptr.decrypt(messages[i].author);
+      const hashedTime1 = await cryptr.decrypt(messages[i].time);
       messages[i].message = hashedMessage1;
       messages[i].author = hashedAuthor1;
       messages[i].room = hashedRoom1;
       messages[i].time = hashedTime1;
-    } else {
+    }
+    if (hashedRoom1 !== room1) {
       messages.splice(i, 1);
     }
   }
   res.send(messages);
 });
-
-// router.delete(`/room`, (req, res, next) => {
-//   const message = req.body;
-//   History.findOneAndDelete({
-//     message: message.message,
-//     author: message.author,
-//     room: message.room,
-//   })
-//     .then(console.log(`message deleted`))
-//     .catch(next);
-// });
 
 module.exports = router;
