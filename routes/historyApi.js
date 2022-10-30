@@ -24,25 +24,25 @@ router.post(`/room`, async (req, res, next) => {
 });
 
 router.post(`/gethistory`, async (req, res, next) => {
+  const messageList = [];
   const room1 = req.body.room;
   const messages = await History.find();
   // console.log(messages);
   for (let i = 0; i < messages.length; i++) {
     const hashedRoom1 = cryptr.decrypt(messages[i].room);
     if (hashedRoom1 === room1) {
+      const newMessage = { message: "", author: "", room: "", time: "" };
       const hashedMessage1 = await cryptr.decrypt(messages[i].message);
       const hashedAuthor1 = await cryptr.decrypt(messages[i].author);
       const hashedTime1 = await cryptr.decrypt(messages[i].time);
-      messages[i].message = hashedMessage1;
-      messages[i].author = hashedAuthor1;
-      messages[i].room = hashedRoom1;
-      messages[i].time = hashedTime1;
-    }
-    if (hashedRoom1 !== room1) {
-      messages.splice(i, 1);
+      newMessage.message = hashedMessage1;
+      newMessage.author = hashedAuthor1;
+      newMessage.room = hashedRoom1;
+      newMessage.time = hashedTime1;
+      messageList.push(newMessage);
     }
   }
-  res.send(messages);
+  res.send(messageList);
 });
 
 module.exports = router;
