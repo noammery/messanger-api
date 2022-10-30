@@ -37,9 +37,11 @@ router.post(`/gethistory`, async (req, res, next) => {
       messages[i].author = hashedAuthor1;
       messages[i].room = hashedRoom1;
       messages[i].time = hashedTime1;
-      res.send(messages);
+    } else {
+      messages.splice(i, 1);
     }
   }
+  res.send(messages);
 });
 
 // router.delete(`/room`, (req, res, next) => {
