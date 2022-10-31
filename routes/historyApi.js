@@ -45,4 +45,25 @@ router.post(`/gethistory`, async (req, res, next) => {
   res.send(messageList);
 });
 
+router.post(`/getrooms`, async (req, res, next) => {
+  const roomList = [];
+  const user = req.body.author;
+  const messages = await History.find();
+  for (let i = 0; i < messages.length; i++) {
+    const unHashedUser = await cryptr.decrypt(messages[i].author);
+    if (user == unHashedUser) {
+      const hashedRoom = await cryptr.decrypt(messages[i].room);
+      roomList.push(hashedRoom);
+    }
+  }
+  const filterredRoomList = await roomList.filter(
+    (item, index) => roomList.indexOf(item) === index
+  );
+  if (filterredRoomList.length !== 0) {
+    res.send(filterredRoomList);
+  } else {
+    res.send(["nodata"]);
+  }
+});
+
 module.exports = router;
