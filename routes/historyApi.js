@@ -9,12 +9,12 @@ const cryptr = new Cryptr(`${process.env.MESSAGE_TOKEN_SECRET}`);
 router.post(`/room`, async (req, res, next) => {
   if (req.body) {
     const hashedMessage = cryptr.encrypt(req.body.message);
-    const hashedRoom = cryptr.encrypt(req.body.room);
+    // const hashedRoom = cryptr.encrypt(req.body.room);
     const hashedAuthor = cryptr.encrypt(req.body.author);
     const hashedTime = cryptr.encrypt(req.body.time);
     const hashedObj = req.body;
     hashedObj.message = hashedMessage;
-    hashedObj.room = hashedRoom;
+    hashedObj.room = req.body.room;
     hashedObj.author = hashedAuthor;
     hashedObj.time = hashedTime;
     History.create(hashedObj)
@@ -26,21 +26,18 @@ router.post(`/room`, async (req, res, next) => {
 router.post(`/gethistory`, async (req, res, next) => {
   const messageList = [];
   const room1 = req.body.room;
-  const messages = await History.find();
+  const messages = await History.find({ room: room1 });
   // console.log(messages);
   for (let i = 0; i < messages.length; i++) {
-    const hashedRoom1 = cryptr.decrypt(messages[i].room);
-    if (hashedRoom1 === room1) {
-      const newMessage = { message: "", author: "", room: "", time: "" };
-      const hashedMessage1 = await cryptr.decrypt(messages[i].message);
-      const hashedAuthor1 = await cryptr.decrypt(messages[i].author);
-      const hashedTime1 = await cryptr.decrypt(messages[i].time);
-      newMessage.message = hashedMessage1;
-      newMessage.author = hashedAuthor1;
-      newMessage.room = hashedRoom1;
-      newMessage.time = hashedTime1;
-      messageList.push(newMessage);
-    }
+    const newMessage = { message: "", author: "", room: "", time: "" };
+    const hashedMessage1 = await cryptr.decrypt(messages[i].message);
+    const hashedAuthor1 = await cryptr.decrypt(messages[i].author);
+    const hashedTime1 = await cryptr.decrypt(messages[i].time);
+    newMessage.message = hashedMessage1;
+    newMessage.author = hashedAuthor1;
+    newMessage.room = room1;
+    newMessage.time = hashedTime1;
+    messageList.push(newMessage);
   }
   res.send(messageList);
 });
@@ -52,8 +49,7 @@ router.post(`/getrooms`, async (req, res, next) => {
   for (let i = 0; i < messages.length; i++) {
     const unHashedUser = await cryptr.decrypt(messages[i].author);
     if (user == unHashedUser) {
-      const hashedRoom = await cryptr.decrypt(messages[i].room);
-      roomList.push(hashedRoom);
+      roomList.push(messages[i].room);
     }
   }
   const filterredRoomList = await roomList.filter(
